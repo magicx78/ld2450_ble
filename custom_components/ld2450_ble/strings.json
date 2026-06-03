@@ -18,6 +18,19 @@
       "unknown": "Unexpected error."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "LD2450 BLE options",
+        "data": {
+          "enable_radar_map_manager": "Radar Map Manager support"
+        },
+        "data_description": {
+          "enable_radar_map_manager": "Enable the per-target X/Y coordinate sensors and a presence_target_count sensor for use with the Radar Map Manager integration."
+        }
+      }
+    }
+  },
   "exceptions": {
     "device_not_found": {
       "message": "Could not find LD2450 device with address {address}. Make sure it is powered and in range of a Bluetooth proxy."
@@ -34,6 +47,7 @@
       "y": { "name": "Target {target} Y" },
       "speed": { "name": "Target {target} speed" },
       "resolution": { "name": "Target {target} resolution" },
+      "presence_target_count": { "name": "Presence target count" },
       "last_seen": { "name": "Last seen" },
       "last_disconnect": { "name": "Last disconnect" },
       "disconnect_count": { "name": "Disconnect count" },

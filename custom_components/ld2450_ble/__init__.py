@@ -88,7 +88,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: LD2450BLEConfigEntry) ->
 
     entry.runtime_data = LD2450BLEData(entry.title, device, coordinator)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    entry.async_on_unload(entry.add_update_listener(_async_options_updated))
     return True
+
+
+async def _async_options_updated(
+    hass: HomeAssistant, entry: LD2450BLEConfigEntry
+) -> None:
+    """Reload the entry when its options change (e.g. RMM support toggled)."""
+    await hass.config_entries.async_reload(entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: LD2450BLEConfigEntry) -> bool:

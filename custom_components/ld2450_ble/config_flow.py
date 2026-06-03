@@ -12,10 +12,16 @@ from homeassistant.components.bluetooth import (
     BluetoothServiceInfoBleak,
     async_discovered_service_info,
 )
-from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
+from homeassistant.config_entries import (
+    ConfigEntry,
+    ConfigFlow,
+    ConfigFlowResult,
+    OptionsFlow,
+)
 from homeassistant.const import CONF_ADDRESS
+from homeassistant.core import callback
 
-from .const import DOMAIN, LOCAL_NAMES
+from .const import CONF_ENABLE_RMM, DEFAULT_ENABLE_RMM, DOMAIN, LOCAL_NAMES
 from .ld2450_ble import BLEAK_EXCEPTIONS, LD2450BLE
 
 _LOGGER = logging.getLogger(__name__)
@@ -30,6 +36,12 @@ class LD2450BleConfigFlow(ConfigFlow, domain=DOMAIN):
         """Initialise the flow."""
         self._discovery_info: BluetoothServiceInfoBleak | None = None
         self._discovered_devices: dict[str, BluetoothServiceInfoBleak] = {}
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry) -> OptionsFlow:
+        """Return the options flow handler."""
+        return LD2450BleOptionsFlow()
 
     async def async_step_bluetooth(
         self, discovery_info: BluetoothServiceInfoBleak
@@ -103,4 +115,23 @@ class LD2450BleConfigFlow(ConfigFlow, domain=DOMAIN):
                 }
             ),
             errors=errors,
+        )
+
+
+class LD2450BleOptionsFlow(OptionsFlow):
+    """Handle options for the LD2450 BLE integration."""
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Manage the integration options."""
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+
+        current = self.config_entry.options.get(CONF_ENABLE_RMM, DEFAULT_ENABLE_RMM)
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {vol.Required(CONF_ENABLE_RMM, default=current): bool}
+            ),
         )

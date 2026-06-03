@@ -16,7 +16,7 @@ from homeassistant.const import DEGREE, UnitOfLength, UnitOfSpeed, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CONNECTION_STATES
+from .const import CONF_ENABLE_RMM, CONNECTION_STATES, DEFAULT_ENABLE_RMM
 from .coordinator import LD2450BLECoordinator
 from .entity import LD2450BLEDiagnosticEntity, LD2450BLEEntity
 from .ld2450_ble.models import Target
@@ -30,6 +30,10 @@ class LD2450BLESensorEntityDescription(SensorEntityDescription):
     """Describes an LD2450 sensor derived from a target."""
 
     value_fn: Callable[[Target], float | int]
+    # When True, report ``None`` (unknown) instead of a value for an empty
+    # target slot. Used by the X/Y coordinates so downstream consumers (e.g.
+    # Radar Map Manager) cleanly skip absent targets instead of seeing (0, 0).
+    none_when_absent: bool = False
 
 
 SENSOR_TYPES: tuple[LD2450BLESensorEntityDescription, ...] = (
@@ -50,13 +54,16 @@ SENSOR_TYPES: tuple[LD2450BLESensorEntityDescription, ...] = (
         suggested_display_precision=1,
         value_fn=lambda t: round(t.angle, 1),
     ),
+    # X/Y are the coordinates Radar Map Manager reads (sensor.<device>_target_N_x
+    # / _y, in mm). They are enabled by default only when the RMM option is on
+    # (see async_setup_entry); empty slots report unknown either way.
     LD2450BLESensorEntityDescription(
         key="x",
         translation_key="x",
         native_unit_of_measurement=UnitOfLength.MILLIMETERS,
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
-        entity_registry_enabled_default=False,
+        none_when_absent=True,
         value_fn=lambda t: t.x,
     ),
     LD2450BLESensorEntityDescription(
@@ -65,7 +72,7 @@ SENSOR_TYPES: tuple[LD2450BLESensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfLength.MILLIMETERS,
         device_class=SensorDeviceClass.DISTANCE,
         state_class=SensorStateClass.MEASUREMENT,
-        entity_registry_enabled_default=False,
+        none_when_absent=True,
         value_fn=lambda t: t.y,
     ),
     LD2450BLESensorEntityDescription(
@@ -155,8 +162,10 @@ async def async_setup_entry(
 ) -> None:
     """Set up the sensor platform."""
     coordinator = entry.runtime_data.coordinator
+    rmm_enabled = entry.options.get(CONF_ENABLE_RMM, DEFAULT_ENABLE_RMM)
+
     entities: list[SensorEntity] = [
-        LD2450BLESensor(coordinator, description, index)
+        LD2450BLESensor(coordinator, description, index, rmm_enabled)
         for index in range(TARGET_COUNT)
         for description in SENSOR_TYPES
     ]
@@ -164,6 +173,9 @@ async def async_setup_entry(
         LD2450BLEDiagnosticSensor(coordinator, description)
         for description in DIAGNOSTIC_SENSOR_TYPES
     )
+    # The presence-count sensor only exists when RMM support is enabled.
+    if rmm_enabled:
+        entities.append(LD2450BLEPresenceCountSensor(coordinator))
     async_add_entities(entities)
 
 
@@ -177,17 +189,24 @@ class LD2450BLESensor(LD2450BLEEntity, SensorEntity):
         coordinator: LD2450BLECoordinator,
         description: LD2450BLESensorEntityDescription,
         index: int,
+        rmm_enabled: bool = False,
     ) -> None:
         """Initialise the sensor."""
         super().__init__(coordinator, f"target{index + 1}_{description.key}")
         self.entity_description = description
         self._index = index
         self._attr_translation_placeholders = {"target": str(index + 1)}
+        # X/Y are the RMM coordinate sensors: enable by default only when the
+        # Radar Map Manager option is on.
+        if description.none_when_absent:
+            self._attr_entity_registry_enabled_default = rmm_enabled
 
     @property
-    def native_value(self) -> float | int:
+    def native_value(self) -> float | int | None:
         """Return the current value for this target field."""
         target = self.coordinator.device.state.targets[self._index]
+        if self.entity_description.none_when_absent and not target.present:
+            return None
         return self.entity_description.value_fn(target)
 
 
@@ -209,3 +228,26 @@ class LD2450BLEDiagnosticSensor(LD2450BLEDiagnosticEntity, SensorEntity):
     def native_value(self) -> datetime | int | str | None:
         """Return the current diagnostic value."""
         return self.entity_description.value_fn(self.coordinator)
+
+
+class LD2450BLEPresenceCountSensor(LD2450BLEEntity, SensorEntity):
+    """Number of currently present targets (0..3).
+
+    Exposed as ``sensor.<device>_presence_target_count`` for convenience and
+    Radar Map Manager compatibility. (RMM derives its own fused count, so this
+    is an additive helper, not a hard requirement.)
+    """
+
+    _attr_translation_key = "presence_target_count"
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, coordinator: LD2450BLECoordinator) -> None:
+        """Initialise the presence-count sensor."""
+        super().__init__(coordinator, "presence_target_count")
+
+    @property
+    def native_value(self) -> int:
+        """Return how many target slots currently hold a real detection."""
+        return sum(
+            1 for target in self.coordinator.device.state.targets if target.present
+        )

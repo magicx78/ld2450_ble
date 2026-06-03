@@ -69,11 +69,12 @@ SENSOR_TYPES: tuple[LD2450BLESensorEntityDescription, ...] = (
     LD2450BLESensorEntityDescription(
         key="speed",
         translation_key="speed",
-        native_unit_of_measurement=UnitOfSpeed.CENTIMETERS_PER_SECOND,
+        # Raw protocol unit is cm/s; HA has no cm/s speed unit, so report mm/s.
+        native_unit_of_measurement=UnitOfSpeed.MILLIMETERS_PER_SECOND,
         device_class=SensorDeviceClass.SPEED,
         state_class=SensorStateClass.MEASUREMENT,
         entity_registry_enabled_default=False,
-        value_fn=lambda t: t.speed,
+        value_fn=lambda t: t.speed * 10,
     ),
     LD2450BLESensorEntityDescription(
         key="resolution",

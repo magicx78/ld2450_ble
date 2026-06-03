@@ -15,6 +15,9 @@ This is a clean, modern rebuild against current Home Assistant, `bleak` 3.x and
 `bleak-retry-connector` 4.x APIs (`runtime_data`, push coordinator, corrected
 LD2450 sign-magnitude coordinate decoding).
 
+> Verified end-to-end on real HLK-LD2450 hardware with Home Assistant 2026.2.3
+> (discovery, connection, live data, all entities).
+
 ## Features
 
 - Tracks up to **3 targets** simultaneously, pushed in real time (no polling).

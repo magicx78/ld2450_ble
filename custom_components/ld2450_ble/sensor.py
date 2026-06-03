@@ -15,9 +15,9 @@ from homeassistant.const import DEGREE, UnitOfLength, UnitOfSpeed
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .ld2450_ble.models import Target
 from .coordinator import LD2450BLECoordinator
 from .entity import LD2450BLEEntity
+from .ld2450_ble.models import Target
 from .models import LD2450BLEConfigEntry
 
 TARGET_COUNT = 3

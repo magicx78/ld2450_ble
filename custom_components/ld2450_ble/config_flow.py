@@ -7,7 +7,6 @@ from typing import Any
 
 import voluptuous as vol
 from bluetooth_data_tools import human_readable_name
-
 from homeassistant.components import bluetooth
 from homeassistant.components.bluetooth import (
     BluetoothServiceInfoBleak,
@@ -83,9 +82,7 @@ class LD2450BleConfigFlow(ConfigFlow, domain=DOMAIN):
                 if (
                     discovery.address in current_addresses
                     or discovery.address in self._discovered_devices
-                    or not any(
-                        discovery.name.startswith(name) for name in LOCAL_NAMES
-                    )
+                    or not any(discovery.name.startswith(name) for name in LOCAL_NAMES)
                 ):
                     continue
                 self._discovered_devices[discovery.address] = discovery

@@ -7,9 +7,9 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .ld2450_ble.const import AREA_DISABLED, AREA_IGNORE, AREA_MONITOR
 from .coordinator import LD2450BLECoordinator
 from .entity import LD2450BLEEntity
+from .ld2450_ble.const import AREA_DISABLED, AREA_IGNORE, AREA_MONITOR
 from .models import LD2450BLEConfigEntry
 
 # Option label -> device mode value. Labels are translated via select state keys.

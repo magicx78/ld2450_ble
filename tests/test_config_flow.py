@@ -5,7 +5,6 @@ from __future__ import annotations
 from unittest.mock import AsyncMock, patch
 
 from bleak import BleakError
-
 from homeassistant.config_entries import SOURCE_BLUETOOTH
 from homeassistant.const import CONF_ADDRESS
 from homeassistant.core import HomeAssistant
@@ -20,9 +19,7 @@ async def test_bluetooth_discovery_creates_entry(
     hass: HomeAssistant, service_info
 ) -> None:
     """A discovered device can be confirmed and creates an entry."""
-    with patch(
-        "custom_components.ld2450_ble.config_flow.LD2450BLE"
-    ) as mock_device:
+    with patch("custom_components.ld2450_ble.config_flow.LD2450BLE") as mock_device:
         instance = mock_device.return_value
         instance.initialise = AsyncMock()
         instance.stop = AsyncMock()
@@ -48,9 +45,7 @@ async def test_bluetooth_discovery_cannot_connect(
     hass: HomeAssistant, service_info
 ) -> None:
     """A connection failure surfaces a cannot_connect error."""
-    with patch(
-        "custom_components.ld2450_ble.config_flow.LD2450BLE"
-    ) as mock_device:
+    with patch("custom_components.ld2450_ble.config_flow.LD2450BLE") as mock_device:
         instance = mock_device.return_value
         instance.initialise = AsyncMock(side_effect=BleakError("boom"))
         instance.stop = AsyncMock()

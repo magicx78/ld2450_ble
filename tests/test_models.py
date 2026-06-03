@@ -17,11 +17,7 @@ from custom_components.ld2450_ble.ld2450_ble.models import (
 #   V bytes EC 00 -> mag 236, bit15(0x00)=0 -> -236
 #   res bytes 64 00 -> 100 (unsigned)
 FRAME_ONE_TARGET = bytes.fromhex(
-    "AAFF0300"
-    "0E034C84EC006400"
-    "0000000000000000"
-    "0000000000000000"
-    "55CC"
+    "AAFF03000E034C84EC0064000000000000000000000000000000000055CC"
 )
 
 

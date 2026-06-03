@@ -5,7 +5,6 @@ from __future__ import annotations
 import pytest
 from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
-
 from homeassistant.components.bluetooth import BluetoothServiceInfoBleak
 
 pytest_plugins = ["pytest_homeassistant_custom_component"]

@@ -9,9 +9,9 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .ld2450_ble import MULTI_TARGET_MODE, SINGLE_TARGET_MODE
 from .coordinator import LD2450BLECoordinator
 from .entity import LD2450BLEEntity
+from .ld2450_ble import MULTI_TARGET_MODE, SINGLE_TARGET_MODE
 from .models import LD2450BLEConfigEntry
 
 MULTI_TARGET_SWITCH = SwitchEntityDescription(

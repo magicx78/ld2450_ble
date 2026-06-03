@@ -14,9 +14,7 @@ class LD2450BLEEntity(CoordinatorEntity[LD2450BLECoordinator]):
 
     _attr_has_entity_name = True
 
-    def __init__(
-        self, coordinator: LD2450BLECoordinator, key: str
-    ) -> None:
+    def __init__(self, coordinator: LD2450BLECoordinator, key: str) -> None:
         """Initialise the entity with a stable unique id."""
         super().__init__(coordinator)
         address = coordinator.device.address

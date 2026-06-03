@@ -4,13 +4,12 @@ from __future__ import annotations
 
 import logging
 
+from bleak_retry_connector import close_stale_connections_by_address, get_device
 from homeassistant.components import bluetooth
 from homeassistant.components.bluetooth.match import ADDRESS, BluetoothCallbackMatcher
 from homeassistant.const import CONF_ADDRESS, EVENT_HOMEASSISTANT_STOP, Platform
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
-
-from bleak_retry_connector import close_stale_connections_by_address, get_device
 
 from .const import DOMAIN
 from .coordinator import LD2450BLECoordinator
@@ -29,9 +28,7 @@ PLATFORMS: list[Platform] = [
 ]
 
 
-async def async_setup_entry(
-    hass: HomeAssistant, entry: LD2450BLEConfigEntry
-) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: LD2450BLEConfigEntry) -> bool:
     """Set up LD2450 BLE from a config entry."""
     address: str = entry.data[CONF_ADDRESS]
     await close_stale_connections_by_address(address)
@@ -89,12 +86,8 @@ async def async_setup_entry(
     return True
 
 
-async def async_unload_entry(
-    hass: HomeAssistant, entry: LD2450BLEConfigEntry
-) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: LD2450BLEConfigEntry) -> bool:
     """Unload a config entry."""
-    if unload_ok := await hass.config_entries.async_unload_platforms(
-        entry, PLATFORMS
-    ):
+    if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         await entry.runtime_data.device.stop()
     return unload_ok

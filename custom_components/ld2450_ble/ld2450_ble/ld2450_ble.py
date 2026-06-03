@@ -18,6 +18,8 @@ from bleak.backends.device import BLEDevice
 from bleak.backends.scanner import AdvertisementData
 from bleak_retry_connector import (
     BLEAK_RETRY_EXCEPTIONS as BLEAK_EXCEPTIONS,
+)
+from bleak_retry_connector import (
     BleakClientWithServiceCache,
     BleakNotFoundError,
     establish_connection,
@@ -26,8 +28,8 @@ from bleak_retry_connector import (
 from .const import (
     CHARACTERISTIC_NOTIFY,
     CHARACTERISTIC_WRITE,
-    CMD_END_CONFIG,
     CMD_ENABLE_CONFIG,
+    CMD_END_CONFIG,
     CMD_HEADER,
     CMD_MULTI_TARGET,
     CMD_RESTART,

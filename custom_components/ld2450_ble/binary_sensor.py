@@ -13,9 +13,9 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .ld2450_ble.models import LD2450BLEState
 from .coordinator import LD2450BLECoordinator
 from .entity import LD2450BLEEntity
+from .ld2450_ble.models import LD2450BLEState
 from .models import LD2450BLEConfigEntry
 
 TARGET_COUNT = 3
@@ -66,9 +66,7 @@ async def async_setup_entry(
     ]
     for index in range(TARGET_COUNT):
         for description in _target_sensors(index):
-            entities.append(
-                LD2450BLEBinarySensor(coordinator, description, index)
-            )
+            entities.append(LD2450BLEBinarySensor(coordinator, description, index))
     async_add_entities(entities)
 
 

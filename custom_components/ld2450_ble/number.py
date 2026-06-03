@@ -13,9 +13,9 @@ from homeassistant.const import EntityCategory, UnitOfLength
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .ld2450_ble.models import with_area_vertex
 from .coordinator import LD2450BLECoordinator
 from .entity import LD2450BLEEntity
+from .ld2450_ble.models import with_area_vertex
 from .models import LD2450BLEConfigEntry
 
 # area_vertices layout: 3 regions x (x1, y1, x2, y2) = 12 values.

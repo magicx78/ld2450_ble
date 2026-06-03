@@ -1,6 +1,23 @@
 # Changelog
 
-## [0.2.0] - Unreleased
+## [0.3.0] - 2026-06-03
+### Added
+- **Radar Map Manager support** (opt-in). A new options-flow toggle
+  *Radar Map Manager support* (**off by default**) exposes entities compatible
+  with [Moe8383/radar_map_manager](https://github.com/Moe8383/radar_map_manager):
+  - the per-target `sensor.<device>_target_<n>_x` / `_y` coordinate sensors (mm)
+    become enabled, and an empty target slot reports `unknown` (so RMM skips it);
+  - a new `sensor.<device>_presence_target_count` sensor (0–3).
+- Toggling the option reloads the config entry.
+
+### Notes
+- RMM matches radars by the literal entity-id suffix `_target_<n>_x` / `_y`. In a
+  non-English Home Assistant the auto-generated suffix is translated (e.g. German
+  `_ziel_1_x`); rename the X/Y entity-ids to the `target_<n>` form for RMM. See
+  the README.
+- Verified end-to-end on real HLK-LD2450 hardware against a live RMM install.
+
+## [0.2.0] - 2026-06-03
 ### Added
 - Connectivity **diagnostic** entities, created automatically per device
   (no YAML), in the diagnostic category:

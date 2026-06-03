@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from homeassistant.const import EntityCategory
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH, DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -36,3 +37,18 @@ class LD2450BLEEntity(CoordinatorEntity[LD2450BLECoordinator]):
     def device(self):
         """Shortcut to the BLE device handle."""
         return self.coordinator.device
+
+
+class LD2450BLEDiagnosticEntity(LD2450BLEEntity):
+    """Base for connectivity-diagnostic entities.
+
+    Unlike the regular entities, these must stay available even when the
+    device is offline so they can report the connection status.
+    """
+
+    _attr_entity_category = EntityCategory.DIAGNOSTIC
+
+    @property
+    def available(self) -> bool:
+        """Diagnostic entities remain available regardless of connection."""
+        return self.coordinator.last_update_success

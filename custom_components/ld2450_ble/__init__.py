@@ -81,6 +81,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: LD2450BLEConfigEntry) ->
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _async_stop)
     )
 
+    # Start periodic diagnostic refresh and ensure its timers are cancelled
+    # when the entry is unloaded.
+    coordinator.async_start()
+    entry.async_on_unload(coordinator.async_shutdown)
+
     entry.runtime_data = LD2450BLEData(entry.title, device, coordinator)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True

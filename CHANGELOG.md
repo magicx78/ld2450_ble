@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.2.0] - Unreleased
+### Added
+- Connectivity **diagnostic** entities, created automatically per device
+  (no YAML), in the diagnostic category:
+  - `binary_sensor.<device>_ble_connected` (device_class `connectivity`)
+  - `sensor.<device>_last_seen` (timestamp)
+  - `sensor.<device>_connection_state` (enum: connected / reconnecting /
+    disconnected / stale)
+  - `sensor.<device>_disconnect_count`
+  - `sensor.<device>_reconnect_count`
+  - `sensor.<device>_last_disconnect` (timestamp)
+  - `sensor.<device>_offline_duration` (seconds)
+  - `sensor.<device>_online_duration` (seconds)
+- Central connectivity state tracking in the coordinator with a stale watchdog
+  (`STALE_TIMEOUT`, 30 s) and a periodic refresh so durations keep ticking
+  while offline.
+- `LD2450BLE.is_connected` property (BLE library).
+
+### Notes
+- `sensor.<device>_reliability_24h` is intentionally **not** implemented yet:
+  doing it correctly needs persistent 24 h history (recorder/restore). Tracked
+  as a TODO rather than shipping an in-memory approximation that resets on
+  restart.
+
 ## [0.1.1] - 2026-06-03
 ### Changed
 - Production-grade README (CI badges, entities table, development section).

@@ -33,12 +33,28 @@
       "x": { "name": "Ziel {target} X" },
       "y": { "name": "Ziel {target} Y" },
       "speed": { "name": "Ziel {target} Geschwindigkeit" },
-      "resolution": { "name": "Ziel {target} Auflösung" }
+      "resolution": { "name": "Ziel {target} Auflösung" },
+      "last_seen": { "name": "Zuletzt gesehen" },
+      "last_disconnect": { "name": "Letzte Trennung" },
+      "disconnect_count": { "name": "Trennungen" },
+      "reconnect_count": { "name": "Wiederverbindungen" },
+      "offline_duration": { "name": "Offline-Dauer" },
+      "online_duration": { "name": "Online-Dauer" },
+      "connection_state": {
+        "name": "Verbindungsstatus",
+        "state": {
+          "connected": "Verbunden",
+          "reconnecting": "Verbindet erneut",
+          "disconnected": "Getrennt",
+          "stale": "Veraltet"
+        }
+      }
     },
     "binary_sensor": {
       "any_presence": { "name": "Anwesenheit" },
       "target_present": { "name": "Ziel {target} vorhanden" },
-      "target_moving": { "name": "Ziel {target} in Bewegung" }
+      "target_moving": { "name": "Ziel {target} in Bewegung" },
+      "ble_connected": { "name": "BLE verbunden" }
     },
     "switch": {
       "multi_target": { "name": "Multi-Ziel-Verfolgung" }

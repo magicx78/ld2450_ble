@@ -33,12 +33,28 @@
       "x": { "name": "Target {target} X" },
       "y": { "name": "Target {target} Y" },
       "speed": { "name": "Target {target} speed" },
-      "resolution": { "name": "Target {target} resolution" }
+      "resolution": { "name": "Target {target} resolution" },
+      "last_seen": { "name": "Last seen" },
+      "last_disconnect": { "name": "Last disconnect" },
+      "disconnect_count": { "name": "Disconnect count" },
+      "reconnect_count": { "name": "Reconnect count" },
+      "offline_duration": { "name": "Offline duration" },
+      "online_duration": { "name": "Online duration" },
+      "connection_state": {
+        "name": "Connection state",
+        "state": {
+          "connected": "Connected",
+          "reconnecting": "Reconnecting",
+          "disconnected": "Disconnected",
+          "stale": "Stale"
+        }
+      }
     },
     "binary_sensor": {
       "any_presence": { "name": "Presence" },
       "target_present": { "name": "Target {target} present" },
-      "target_moving": { "name": "Target {target} moving" }
+      "target_moving": { "name": "Target {target} moving" },
+      "ble_connected": { "name": "BLE connected" }
     },
     "switch": {
       "multi_target": { "name": "Multi-target tracking" }

@@ -34,6 +34,7 @@
       "y": { "name": "Ziel {target} Y" },
       "speed": { "name": "Ziel {target} Geschwindigkeit" },
       "resolution": { "name": "Ziel {target} Auflösung" },
+      "presence_target_count": { "name": "Anzahl anwesender Ziele" },
       "last_seen": { "name": "Zuletzt gesehen" },
       "last_disconnect": { "name": "Letzte Trennung" },
       "disconnect_count": { "name": "Trennungen" },

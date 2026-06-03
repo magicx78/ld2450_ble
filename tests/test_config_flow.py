@@ -91,3 +91,25 @@ async def test_bluetooth_discovery_already_configured(
     )
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "already_configured"
+
+
+async def test_options_flow_toggles_rmm(hass: HomeAssistant) -> None:
+    """The options flow stores the Radar Map Manager support toggle."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    from custom_components.ld2450_ble.const import CONF_ENABLE_RMM
+
+    entry = MockConfigEntry(
+        domain=DOMAIN, unique_id=ADDRESS, data={CONF_ADDRESS: ADDRESS}
+    )
+    entry.add_to_hass(hass)
+
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    assert result["type"] is FlowResultType.FORM
+    assert result["step_id"] == "init"
+
+    result2 = await hass.config_entries.options.async_configure(
+        result["flow_id"], {CONF_ENABLE_RMM: True}
+    )
+    assert result2["type"] is FlowResultType.CREATE_ENTRY
+    assert entry.options == {CONF_ENABLE_RMM: True}

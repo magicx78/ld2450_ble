@@ -18,6 +18,19 @@
       "unknown": "Unerwarteter Fehler."
     }
   },
+  "options": {
+    "step": {
+      "init": {
+        "title": "LD2450-BLE-Optionen",
+        "data": {
+          "enable_radar_map_manager": "Radar-Map-Manager-Unterstützung"
+        },
+        "data_description": {
+          "enable_radar_map_manager": "Aktiviert die X/Y-Koordinatensensoren pro Ziel sowie einen presence_target_count-Sensor zur Nutzung mit der Radar-Map-Manager-Integration."
+        }
+      }
+    }
+  },
   "exceptions": {
     "device_not_found": {
       "message": "LD2450-Gerät mit Adresse {address} nicht gefunden. Stelle sicher, dass es eingeschaltet und in Reichweite eines Bluetooth-Proxys ist."

@@ -16,7 +16,7 @@ from homeassistant.const import DEGREE, UnitOfLength, UnitOfSpeed, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CONNECTION_STATES
+from .const import CONF_ENABLE_RMM, CONNECTION_STATES, DEFAULT_ENABLE_RMM
 from .coordinator import LD2450BLECoordinator
 from .entity import LD2450BLEDiagnosticEntity, LD2450BLEEntity
 from .ld2450_ble.models import Target
@@ -54,8 +54,9 @@ SENSOR_TYPES: tuple[LD2450BLESensorEntityDescription, ...] = (
         suggested_display_precision=1,
         value_fn=lambda t: round(t.angle, 1),
     ),
-    # X/Y are enabled by default: they are the coordinates Radar Map Manager
-    # reads (sensor.<device>_target_N_x / _y, in mm). Empty slots report unknown.
+    # X/Y are the coordinates Radar Map Manager reads (sensor.<device>_target_N_x
+    # / _y, in mm). They are enabled by default only when the RMM option is on
+    # (see async_setup_entry); empty slots report unknown either way.
     LD2450BLESensorEntityDescription(
         key="x",
         translation_key="x",
@@ -161,8 +162,10 @@ async def async_setup_entry(
 ) -> None:
     """Set up the sensor platform."""
     coordinator = entry.runtime_data.coordinator
+    rmm_enabled = entry.options.get(CONF_ENABLE_RMM, DEFAULT_ENABLE_RMM)
+
     entities: list[SensorEntity] = [
-        LD2450BLESensor(coordinator, description, index)
+        LD2450BLESensor(coordinator, description, index, rmm_enabled)
         for index in range(TARGET_COUNT)
         for description in SENSOR_TYPES
     ]
@@ -170,7 +173,9 @@ async def async_setup_entry(
         LD2450BLEDiagnosticSensor(coordinator, description)
         for description in DIAGNOSTIC_SENSOR_TYPES
     )
-    entities.append(LD2450BLEPresenceCountSensor(coordinator))
+    # The presence-count sensor only exists when RMM support is enabled.
+    if rmm_enabled:
+        entities.append(LD2450BLEPresenceCountSensor(coordinator))
     async_add_entities(entities)
 
 
@@ -184,12 +189,17 @@ class LD2450BLESensor(LD2450BLEEntity, SensorEntity):
         coordinator: LD2450BLECoordinator,
         description: LD2450BLESensorEntityDescription,
         index: int,
+        rmm_enabled: bool = False,
     ) -> None:
         """Initialise the sensor."""
         super().__init__(coordinator, f"target{index + 1}_{description.key}")
         self.entity_description = description
         self._index = index
         self._attr_translation_placeholders = {"target": str(index + 1)}
+        # X/Y are the RMM coordinate sensors: enable by default only when the
+        # Radar Map Manager option is on.
+        if description.none_when_absent:
+            self._attr_entity_registry_enabled_default = rmm_enabled
 
     @property
     def native_value(self) -> float | int | None:

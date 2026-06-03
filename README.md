@@ -37,8 +37,8 @@ Created per device (target `N` = 1–3):
 | `binary_sensor` | Target N moving | Movement per target |
 | `sensor` | Target N distance | mm, enabled by default |
 | `sensor` | Target N angle | °, enabled by default |
-| `sensor` | Target N X / Y | mm, enabled by default — unknown when the slot is empty |
-| `sensor` | Presence target count | 0–3 currently present targets, enabled by default |
+| `sensor` | Target N X / Y | mm — enabled when *Radar Map Manager support* is on; unknown when the slot is empty |
+| `sensor` | Presence target count | 0–3 currently present targets; only created when *Radar Map Manager support* is on |
 | `sensor` | Target N speed | mm/s, disabled by default |
 | `sensor` | Target N resolution | mm, disabled by default |
 | `switch` | Multi-target tracking | On = multi, off = single |
@@ -92,11 +92,21 @@ sensor.<radar>_target_3_x
 sensor.<radar>_target_3_y
 ```
 
-The `Target N X / Y` sensors above already provide exactly these — in
-**millimetres**, which RMM uses as-is (it reads `unit_of_measurement`; `m` and
-`cm` are scaled, `mm` is taken directly). They are **enabled by default**, and an
-empty target slot reports `unknown`, which RMM skips cleanly. No extra
-configuration, helper templates or duplicate sensors are required.
+The `Target N X / Y` sensors provide exactly these — in **millimetres**, which RMM
+uses as-is (it reads `unit_of_measurement`; `m` and `cm` are scaled, `mm` is taken
+directly). An empty target slot reports `unknown`, which RMM skips cleanly. No
+helper templates or duplicate sensors are required.
+
+### Turn it on (opt-in)
+
+RMM support is **off by default** so non-RMM users keep a clean entity list. To
+enable it, go to **Settings → Devices & Services → LD2450 BLE → Configure** and
+turn on **Radar Map Manager support**. The integration reloads and:
+
+- enables the six `Target N X / Y` sensors, and
+- adds a `presence_target_count` sensor (0–3).
+
+Turning the option back off disables them again.
 
 ### Matching the radar name (and a language caveat)
 

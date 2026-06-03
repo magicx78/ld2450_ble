@@ -9,6 +9,11 @@ DOMAIN: Final = "ld2450_ble"
 # Advertised local-name prefixes used for discovery filtering.
 LOCAL_NAMES: Final = {"HLK-LD2450"}
 
+# Options-flow flag: expose Radar Map Manager-compatible entities (the per-target
+# X/Y coordinate sensors enabled, plus a presence_target_count sensor). Opt-in.
+CONF_ENABLE_RMM: Final = "enable_radar_map_manager"
+DEFAULT_ENABLE_RMM: Final = False
+
 # Debounce window for coalescing rapid push updates (seconds).
 UPDATE_DEBOUNCE: Final = 1.0
 

@@ -11,3 +11,28 @@ LOCAL_NAMES: Final = {"HLK-LD2450"}
 
 # Debounce window for coalescing rapid push updates (seconds).
 UPDATE_DEBOUNCE: Final = 1.0
+
+# --- Connectivity diagnostics ---------------------------------------------
+
+# No valid data for this long (seconds) while still connected -> "stale".
+STALE_TIMEOUT: Final = 30
+
+# Periodic refresh (seconds) so duration/state diagnostics keep ticking while
+# the device is idle or offline (no push updates arrive then).
+DIAGNOSTIC_REFRESH_INTERVAL: Final = 30
+
+# After a disconnect, report "reconnecting" for this long (seconds) before
+# falling back to "disconnected" (the BLE library auto-retries in this window).
+RECONNECT_GRACE: Final = 60
+
+# connection_state values.
+STATE_CONNECTED: Final = "connected"
+STATE_RECONNECTING: Final = "reconnecting"
+STATE_DISCONNECTED: Final = "disconnected"
+STATE_STALE: Final = "stale"
+CONNECTION_STATES: Final = [
+    STATE_CONNECTED,
+    STATE_RECONNECTING,
+    STATE_DISCONNECTED,
+    STATE_STALE,
+]

@@ -48,6 +48,32 @@ Created per device (target `N` = 1–3):
 > The area-filter writes (select + number) are best-effort against the documented
 > command and should be confirmed on your hardware.
 
+## Diagnostic sensors
+
+Each device also exposes connectivity **diagnostics** (entity category
+*diagnostic*, created automatically — no YAML), so you can tell whether the
+sensor is reliably online or keeps dropping:
+
+| Entity | Type | Meaning |
+|---|---|---|
+| `binary_sensor.<device>_ble_connected` | connectivity | On = connected with fresh data |
+| `sensor.<device>_connection_state` | enum | `connected` / `reconnecting` / `disconnected` / `stale` |
+| `sensor.<device>_last_seen` | timestamp | Last valid BLE packet received |
+| `sensor.<device>_last_disconnect` | timestamp | Last detected interruption |
+| `sensor.<device>_disconnect_count` | count | Interruptions since start/reload (once per interruption) |
+| `sensor.<device>_reconnect_count` | count | Successful reconnections since start/reload |
+| `sensor.<device>_offline_duration` | seconds | Current (or last) offline phase |
+| `sensor.<device>_online_duration` | seconds | Current online phase |
+
+State logic lives centrally in the coordinator. A connection that stays up but
+delivers no data for `STALE_TIMEOUT` (30 s) is reported as **stale**; after a
+drop the state is **reconnecting** while the library retries, then
+**disconnected**.
+
+> **TODO:** `sensor.<device>_reliability_24h` (24 h online percentage) is not
+> implemented yet — a correct version needs persistent 24 h history
+> (recorder/restore) rather than an in-memory value that resets on restart.
+
 ## Installation
 
 ### HACS (custom repository)

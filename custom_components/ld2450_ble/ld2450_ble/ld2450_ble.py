@@ -100,6 +100,11 @@ class LD2450BLE:
         """Return the current device configuration."""
         return self._config
 
+    @property
+    def is_connected(self) -> bool:
+        """Return True if a BLE connection is currently established."""
+        return self._client is not None and self._client.is_connected
+
     # ------------------------------------------------------------- callbacks
 
     def register_callback(self, callback: Callable[[], None]) -> Callable[[], None]:

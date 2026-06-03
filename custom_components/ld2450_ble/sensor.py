@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -11,12 +12,13 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.const import DEGREE, UnitOfLength, UnitOfSpeed
+from homeassistant.const import DEGREE, UnitOfLength, UnitOfSpeed, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .const import CONNECTION_STATES
 from .coordinator import LD2450BLECoordinator
-from .entity import LD2450BLEEntity
+from .entity import LD2450BLEDiagnosticEntity, LD2450BLEEntity
 from .ld2450_ble.models import Target
 from .models import LD2450BLEConfigEntry
 
@@ -88,6 +90,64 @@ SENSOR_TYPES: tuple[LD2450BLESensorEntityDescription, ...] = (
 )
 
 
+@dataclass(frozen=True, kw_only=True)
+class LD2450BLEDiagSensorEntityDescription(SensorEntityDescription):
+    """Describes a connectivity-diagnostic sensor read from the coordinator."""
+
+    value_fn: Callable[[LD2450BLECoordinator], datetime | int | str | None]
+
+
+DIAGNOSTIC_SENSOR_TYPES: tuple[LD2450BLEDiagSensorEntityDescription, ...] = (
+    LD2450BLEDiagSensorEntityDescription(
+        key="last_seen",
+        translation_key="last_seen",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        value_fn=lambda c: c.last_seen,
+    ),
+    LD2450BLEDiagSensorEntityDescription(
+        key="connection_state",
+        translation_key="connection_state",
+        device_class=SensorDeviceClass.ENUM,
+        options=CONNECTION_STATES,
+        value_fn=lambda c: c.connection_state,
+    ),
+    LD2450BLEDiagSensorEntityDescription(
+        key="disconnect_count",
+        translation_key="disconnect_count",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda c: c.disconnect_count,
+    ),
+    LD2450BLEDiagSensorEntityDescription(
+        key="reconnect_count",
+        translation_key="reconnect_count",
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        value_fn=lambda c: c.reconnect_count,
+    ),
+    LD2450BLEDiagSensorEntityDescription(
+        key="last_disconnect",
+        translation_key="last_disconnect",
+        device_class=SensorDeviceClass.TIMESTAMP,
+        value_fn=lambda c: c.last_disconnect,
+    ),
+    LD2450BLEDiagSensorEntityDescription(
+        key="offline_duration",
+        translation_key="offline_duration",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        state_class=SensorStateClass.MEASUREMENT,
+        value_fn=lambda c: c.offline_duration,
+    ),
+    LD2450BLEDiagSensorEntityDescription(
+        key="online_duration",
+        translation_key="online_duration",
+        device_class=SensorDeviceClass.DURATION,
+        native_unit_of_measurement=UnitOfTime.SECONDS,
+        state_class=SensorStateClass.MEASUREMENT,
+        value_fn=lambda c: c.online_duration,
+    ),
+)
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: LD2450BLEConfigEntry,
@@ -95,11 +155,16 @@ async def async_setup_entry(
 ) -> None:
     """Set up the sensor platform."""
     coordinator = entry.runtime_data.coordinator
-    async_add_entities(
+    entities: list[SensorEntity] = [
         LD2450BLESensor(coordinator, description, index)
         for index in range(TARGET_COUNT)
         for description in SENSOR_TYPES
+    ]
+    entities.extend(
+        LD2450BLEDiagnosticSensor(coordinator, description)
+        for description in DIAGNOSTIC_SENSOR_TYPES
     )
+    async_add_entities(entities)
 
 
 class LD2450BLESensor(LD2450BLEEntity, SensorEntity):
@@ -124,3 +189,23 @@ class LD2450BLESensor(LD2450BLEEntity, SensorEntity):
         """Return the current value for this target field."""
         target = self.coordinator.device.state.targets[self._index]
         return self.entity_description.value_fn(target)
+
+
+class LD2450BLEDiagnosticSensor(LD2450BLEDiagnosticEntity, SensorEntity):
+    """A connectivity-diagnostic sensor read from the coordinator."""
+
+    entity_description: LD2450BLEDiagSensorEntityDescription
+
+    def __init__(
+        self,
+        coordinator: LD2450BLECoordinator,
+        description: LD2450BLEDiagSensorEntityDescription,
+    ) -> None:
+        """Initialise the diagnostic sensor."""
+        super().__init__(coordinator, description.key)
+        self.entity_description = description
+
+    @property
+    def native_value(self) -> datetime | int | str | None:
+        """Return the current diagnostic value."""
+        return self.entity_description.value_fn(self.coordinator)

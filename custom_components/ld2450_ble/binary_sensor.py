@@ -14,7 +14,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .coordinator import LD2450BLECoordinator
-from .entity import LD2450BLEEntity
+from .entity import LD2450BLEDiagnosticEntity, LD2450BLEEntity
 from .ld2450_ble.models import LD2450BLEState
 from .models import LD2450BLEConfigEntry
 
@@ -61,8 +61,9 @@ async def async_setup_entry(
 ) -> None:
     """Set up the binary sensor platform."""
     coordinator = entry.runtime_data.coordinator
-    entities: list[LD2450BLEBinarySensor] = [
-        LD2450BLEBinarySensor(coordinator, PRESENCE_SENSOR)
+    entities: list[BinarySensorEntity] = [
+        LD2450BLEBinarySensor(coordinator, PRESENCE_SENSOR),
+        LD2450BLEConnectedBinarySensor(coordinator),
     ]
     for index in range(TARGET_COUNT):
         for description in _target_sensors(index):
@@ -91,3 +92,19 @@ class LD2450BLEBinarySensor(LD2450BLEEntity, BinarySensorEntity):
     def is_on(self) -> bool:
         """Return True if the binary sensor is active."""
         return self.entity_description.is_on_fn(self.coordinator.device.state)
+
+
+class LD2450BLEConnectedBinarySensor(LD2450BLEDiagnosticEntity, BinarySensorEntity):
+    """Diagnostic: whether the device is currently connected with fresh data."""
+
+    _attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
+    _attr_translation_key = "ble_connected"
+
+    def __init__(self, coordinator: LD2450BLECoordinator) -> None:
+        """Initialise the connectivity binary sensor."""
+        super().__init__(coordinator, "ble_connected")
+
+    @property
+    def is_on(self) -> bool:
+        """Return True when connected and receiving fresh data."""
+        return self.coordinator.ble_connected

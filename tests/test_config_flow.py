@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, patch
 
+import pytest
 from bleak import BleakError
 from homeassistant.config_entries import SOURCE_BLUETOOTH
 from homeassistant.const import CONF_ADDRESS
@@ -13,6 +14,19 @@ from homeassistant.data_entry_flow import FlowResultType
 from custom_components.ld2450_ble.const import DOMAIN
 
 from .conftest import ADDRESS, NAME
+
+
+@pytest.fixture(autouse=True)
+def _bypass_bluetooth_adapters_setup(hass: HomeAssistant) -> None:
+    """Treat the ``bluetooth_adapters`` dependency as already set up.
+
+    Loading the config-flow handler makes Home Assistant process the
+    integration's dependencies; setting up the real ``bluetooth_adapters``
+    integration needs a running D-Bus, which is absent in some environments
+    (e.g. WSL). The flow itself only needs its handler loaded, so marking the
+    dependency as loaded keeps these tests hermetic.
+    """
+    hass.config.components.add("bluetooth_adapters")
 
 
 async def test_bluetooth_discovery_creates_entry(

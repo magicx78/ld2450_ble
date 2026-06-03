@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Home Assistant (dev)",
+      "runtimeExecutable": "hass",
+      "runtimeArgs": ["-c", "ha-dev", "--debug"],
+      "port": 8123
+    }
+  ]
+}

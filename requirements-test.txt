@@ -1,2 +1,7 @@
 pytest-homeassistant-custom-component
 ruff
+
+# Transitive imports pulled in when the bluetooth component loads the usb
+# component at import time (not auto-installed by the test harness).
+aiousbwatcher
+pyserial

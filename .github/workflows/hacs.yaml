@@ -14,3 +14,6 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # Brands live in home-assistant/brands (separate review PR). Skip the
+          # brands check for the custom-repository workflow; revisit for default store.
+          ignore: brands

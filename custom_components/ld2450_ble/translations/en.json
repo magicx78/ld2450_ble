@@ -1,0 +1,64 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "description": "Choose the LD2450 device to set up.",
+        "data": {
+          "address": "Bluetooth device"
+        }
+      }
+    },
+    "abort": {
+      "no_devices_found": "No unconfigured LD2450 devices found. Make sure the sensor is powered and within range of a Bluetooth adapter or proxy.",
+      "already_configured": "This device is already configured."
+    },
+    "error": {
+      "cannot_connect": "Failed to connect.",
+      "unknown": "Unexpected error."
+    }
+  },
+  "exceptions": {
+    "device_not_found": {
+      "message": "Could not find LD2450 device with address {address}. Make sure it is powered and in range of a Bluetooth proxy."
+    },
+    "cannot_connect": {
+      "message": "Could not connect to LD2450 device with address {address}."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "distance": { "name": "Target {target} distance" },
+      "angle": { "name": "Target {target} angle" },
+      "x": { "name": "Target {target} X" },
+      "y": { "name": "Target {target} Y" },
+      "speed": { "name": "Target {target} speed" },
+      "resolution": { "name": "Target {target} resolution" }
+    },
+    "binary_sensor": {
+      "any_presence": { "name": "Presence" },
+      "target_present": { "name": "Target {target} present" },
+      "target_moving": { "name": "Target {target} moving" }
+    },
+    "switch": {
+      "multi_target": { "name": "Multi-target tracking" }
+    },
+    "select": {
+      "area_mode": {
+        "name": "Area mode",
+        "state": {
+          "disabled": "Disabled",
+          "monitor": "Monitor area",
+          "ignore": "Ignore area"
+        }
+      }
+    },
+    "button": {
+      "reboot": { "name": "Reboot" }
+    },
+    "number": {
+      "area_vertex_x": { "name": "Area {area} vertex {vertex} X" },
+      "area_vertex_y": { "name": "Area {area} vertex {vertex} Y" }
+    }
+  }
+}

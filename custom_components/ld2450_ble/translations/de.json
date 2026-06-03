@@ -1,0 +1,64 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "description": "Wähle das einzurichtende LD2450-Gerät.",
+        "data": {
+          "address": "Bluetooth-Gerät"
+        }
+      }
+    },
+    "abort": {
+      "no_devices_found": "Keine nicht konfigurierten LD2450-Geräte gefunden. Stelle sicher, dass der Sensor mit Strom versorgt und in Reichweite eines Bluetooth-Adapters oder -Proxys ist.",
+      "already_configured": "Dieses Gerät ist bereits konfiguriert."
+    },
+    "error": {
+      "cannot_connect": "Verbindung fehlgeschlagen.",
+      "unknown": "Unerwarteter Fehler."
+    }
+  },
+  "exceptions": {
+    "device_not_found": {
+      "message": "LD2450-Gerät mit Adresse {address} nicht gefunden. Stelle sicher, dass es eingeschaltet und in Reichweite eines Bluetooth-Proxys ist."
+    },
+    "cannot_connect": {
+      "message": "Verbindung zum LD2450-Gerät mit Adresse {address} nicht möglich."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "distance": { "name": "Ziel {target} Entfernung" },
+      "angle": { "name": "Ziel {target} Winkel" },
+      "x": { "name": "Ziel {target} X" },
+      "y": { "name": "Ziel {target} Y" },
+      "speed": { "name": "Ziel {target} Geschwindigkeit" },
+      "resolution": { "name": "Ziel {target} Auflösung" }
+    },
+    "binary_sensor": {
+      "any_presence": { "name": "Anwesenheit" },
+      "target_present": { "name": "Ziel {target} vorhanden" },
+      "target_moving": { "name": "Ziel {target} in Bewegung" }
+    },
+    "switch": {
+      "multi_target": { "name": "Multi-Ziel-Verfolgung" }
+    },
+    "select": {
+      "area_mode": {
+        "name": "Bereichsmodus",
+        "state": {
+          "disabled": "Deaktiviert",
+          "monitor": "Bereich überwachen",
+          "ignore": "Bereich ignorieren"
+        }
+      }
+    },
+    "button": {
+      "reboot": { "name": "Neustart" }
+    },
+    "number": {
+      "area_vertex_x": { "name": "Bereich {area} Eckpunkt {vertex} X" },
+      "area_vertex_y": { "name": "Bereich {area} Eckpunkt {vertex} Y" }
+    }
+  }
+}

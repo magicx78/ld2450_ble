@@ -17,6 +17,11 @@ DEFAULT_ENABLE_RMM: Final = False
 # Debounce window for coalescing rapid push updates (seconds).
 UPDATE_DEBOUNCE: Final = 1.0
 
+# Max time (seconds) to wait for the initial connection during setup before
+# raising ConfigEntryNotReady. Kept well below Home Assistant's bootstrap stage
+# timeout (120 s) so we fail cleanly into a retry instead of being cancelled.
+DEVICE_TIMEOUT: Final = 30
+
 # --- Connectivity diagnostics ---------------------------------------------
 
 # No valid data for this long (seconds) while still connected -> "stale".

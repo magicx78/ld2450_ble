@@ -173,6 +173,7 @@ class LD2450BLE:
                 self._ble_device,
                 self.name,
                 disconnected_callback=self._disconnected,
+                max_attempts=3,
                 use_services_cache=True,
                 ble_device_callback=lambda: self._ble_device,
             )

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 
 from bleak_retry_connector import close_stale_connections_by_address, get_device
@@ -11,7 +12,7 @@ from homeassistant.const import CONF_ADDRESS, EVENT_HOMEASSISTANT_STOP, Platform
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import ConfigEntryNotReady
 
-from .const import DOMAIN
+from .const import DEVICE_TIMEOUT, DOMAIN
 from .coordinator import LD2450BLECoordinator
 from .ld2450_ble import BLEAK_EXCEPTIONS, LD2450BLE
 from .models import LD2450BLEConfigEntry, LD2450BLEData
@@ -47,7 +48,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: LD2450BLEConfigEntry) ->
     coordinator = LD2450BLECoordinator(hass, entry, device)
 
     try:
-        await device.initialise()
+        # Bound the initial connection so a briefly-unreachable device fails
+        # cleanly into a retry instead of HA cancelling the whole setup (the
+        # bootstrap stage timeout). TimeoutError must be caught before
+        # BLEAK_EXCEPTIONS, which also contains asyncio.TimeoutError.
+        # CancelledError is deliberately not caught: it must propagate.
+        async with asyncio.timeout(DEVICE_TIMEOUT):
+            await device.initialise()
+    except TimeoutError as exc:
+        raise ConfigEntryNotReady(
+            translation_domain=DOMAIN,
+            translation_key="cannot_connect",
+            translation_placeholders={"address": address},
+        ) from exc
     except BLEAK_EXCEPTIONS as exc:
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,

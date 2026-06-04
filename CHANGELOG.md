@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.1] - Unreleased
+### Fixed
+- Setup no longer fails with a raw `CancelledError` ("Setup of config entry …
+  cancelled") when the device/Bluetooth proxy is briefly unreachable. The
+  initial connection is now bounded by `DEVICE_TIMEOUT` (30 s) via
+  `asyncio.timeout(...)`, so a slow connect raises `ConfigEntryNotReady` (clean
+  retry) before Home Assistant's bootstrap stage timeout cancels the setup.
+  `CancelledError` is intentionally never swallowed.
+- Library connect now bounds retries (`establish_connection(max_attempts=3)`)
+  so failures surface promptly instead of retrying for minutes.
+
 ## [0.3.0] - 2026-06-03
 ### Added
 - **Radar Map Manager support** (opt-in). A new options-flow toggle
